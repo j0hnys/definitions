@@ -47,7 +47,7 @@ class Definition
             $key_definition_type = '';
             $value_definition_type = '';
 
-            if (preg_match_all("/({{)[a-zA-Z]+(}})/", $key)) {
+            if (preg_match_all("/({{)[a-zA-Z_]+(}})/", $key)) {
                 $definition_type_name = str_replace('{{','',$key);
                 $definition_type_name = str_replace('}}','',$definition_type_name);
 
@@ -80,7 +80,7 @@ class Definition
             }
 
             if (is_string($value)) {
-                if (preg_match_all("/({{)[a-zA-Z]+(}})/", $value)) {
+                if (preg_match_all("/({{)[a-zA-Z_]+(}})/", $value)) {
                     $definition_type_name = str_replace('{{','',$value);
                     $definition_type_name = str_replace('}}','',$definition_type_name);
     
