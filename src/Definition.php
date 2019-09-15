@@ -4,6 +4,7 @@ namespace j0hnys\Definitions;
 
 use J0hnys\Typed\T;
 use J0hnys\Typed\Struct;
+use j0hnys\Definitions\Definitions\Vocabulary;
 
 class Definition
 {
@@ -29,12 +30,12 @@ class Definition
         }
 
         foreach ($haystack as $key => $value) {
-            if (!isset($data[$key]) && strpos($key, '{{') === false) {
+            if (!isset($data[$key]) && !preg_match_all(Vocabulary::schema['reference']['property'], $key)) {
                 throw new \Exception('data key: '.$key.' is not set', 1);
             }
 
             if (is_array($value)) {
-                if (strpos($key, '{{') === false) {
+                if (!preg_match_all(Vocabulary::schema['reference']['property'], $key)) {
                     $this->check( $data[$key], $definition_property, $haystack[$key]);
                 } else {
                     $array_values = array_values($data);
@@ -47,7 +48,7 @@ class Definition
             $key_definition_type = '';
             $value_definition_type = '';
 
-            if (preg_match_all("/({{)[a-zA-Z_]+(}})/", $key)) {
+            if (preg_match_all(Vocabulary::schema['reference']['property'], $key)) {
                 $definition_type_name = str_replace('{{','',$key);
                 $definition_type_name = str_replace('}}','',$definition_type_name);
 
@@ -61,7 +62,7 @@ class Definition
                             throw new \Exception("unknown type", 1);
                         }
                     }
-                } else if (preg_match_all("/(T::)[a-zA-z]+\(\)/", $key_definition_type)) {
+                } else if (preg_match_all(Vocabulary::schema['type'], $key_definition_type)) {
                     $key_definition_type = str_replace('T::', T::class.'::', $key_definition_type);
                     $result = eval('return '.$key_definition_type.';');
                     
@@ -80,7 +81,7 @@ class Definition
             }
 
             if (is_string($value)) {
-                if (preg_match_all("/({{)[a-zA-Z_]+(}})/", $value)) {
+                if (preg_match_all(Vocabulary::schema['reference']['property'], $value)) {
                     $definition_type_name = str_replace('{{','',$value);
                     $definition_type_name = str_replace('}}','',$definition_type_name);
     
@@ -90,7 +91,7 @@ class Definition
                         if (!in_array($data[$key], $value_definition_type)) {
                             throw new \Exception("unknown type", 1);
                         }
-                    } else if (preg_match_all("/(T::)[a-zA-z]+\(\)/", $value_definition_type)) {
+                    } else if (preg_match_all(Vocabulary::schema['type'], $value_definition_type)) {
                         $value_definition_type = str_replace('T::', T::class.'::', $value_definition_type);
                         $result = eval('return '.$value_definition_type.';');
                         
@@ -104,7 +105,7 @@ class Definition
                     } else {
                         throw new \Exception('unknown type "'.$value_definition_type.'"', 1);                        
                     }    
-                } else if (preg_match_all("/(T::)[a-zA-z]+\(\)/", $value)) {
+                } else if (preg_match_all(Vocabulary::schema['type'], $value)) {
                     $value = str_replace('T::', T::class.'::', $value);
                     $result = eval('return '.$value.';');
 
@@ -138,7 +139,7 @@ class Definition
      * @param boolean $set_last_element_value
      * @return void
      */
-    public function checkPath(string $path, string $definition_property = 'schema', $set_last_element_value = true): void
+    public function checkPath(string $path, string $definition_property = '', $set_last_element_value = true): void
     {
         $parts = explode('/', $path);   
 
@@ -170,7 +171,7 @@ class Definition
             if (isset($data[$key]) && empty($data[$key])) {
                 return;
             }
-            if (!isset($data[$key]) && strpos($key, '{{') === false) {
+            if (!isset($data[$key]) && !preg_match_all(Vocabulary::schema['reference']['property'], $key)) {
                 $data_array_key = $key;
                 if (is_array($data)) {
                     $data_array_key = array_key_first($data);
@@ -183,7 +184,7 @@ class Definition
             }
 
             if (is_array($value)) {
-                if (strpos($key, '{{') === false) {
+                if (!preg_match_all(Vocabulary::schema['reference']['property'], $key)) {
                     if (isset($data[$key])) {
                         $this->checkPathRecursive( $data[$key], $definition_property, $haystack[$key] );
                     }
@@ -243,7 +244,7 @@ class Definition
             return [];
         }
     
-        foreach($haystack as $key => $value ) {
+        foreach($haystack as $key => $value) {
             if (is_array($value) && $subPath = $this->arraySearchRecursive($needle, $value, $strict, $path) ) {
                 $path = array_merge($path, [$value]);
                 return $path;
