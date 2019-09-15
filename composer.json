@@ -12,9 +12,20 @@
     "require": {
         "j0hnys/trident-typed": "0.1.0.0"
     },
+    "require-dev": {
+        "phpunit/phpunit": "7"
+    },
     "autoload": {
         "psr-4": {
             "j0hnys\\Definitions\\": "./src"
         }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "j0hnys\\Definitions\\Tests\\": "tests/"
+        },
+        "classmap": [
+            "tests/sandbox"
+        ]
     }
 }
