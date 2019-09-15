@@ -248,7 +248,7 @@ class Definition
             if (is_array($value) && $subPath = $this->arraySearchRecursive($needle, $value, $strict, $path) ) {
                 $path = array_merge($path, [$value]);
                 return $path;
-            } else if ( (!$strict && strpos($key, strtoupper($needle)) !== false ) || ($strict && $key === $needle) ) {
+            } else if ( (!$strict && strpos($key, ($needle)) !== false ) || ($strict && $key === $needle) ) {
                 $path []= $key;
                 return $path;
             }
