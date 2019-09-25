@@ -5,6 +5,8 @@ namespace j0hnys\Definitions;
 use J0hnys\Typed\T;
 use J0hnys\Typed\Struct;
 use j0hnys\Definitions\Definitions\Vocabulary;
+use Reflection;
+use ReflectionClass;
 
 class Definition
 {
@@ -49,8 +51,7 @@ class Definition
             $value_definition_type = '';
 
             if (preg_match_all(Vocabulary::schema['reference']['property'], $key)) {
-                $definition_type_name = str_replace('{{','',$key);
-                $definition_type_name = str_replace('}}','',$definition_type_name);
+                $definition_type_name = preg_replace('({{|}})','',$key);
 
                 $key_definition_type = $constants[$definition_type_name];
                 
@@ -63,8 +64,8 @@ class Definition
                         }
                     }
                 } else if (preg_match_all(Vocabulary::schema['type'], $key_definition_type)) {
-                    $key_definition_type = str_replace('T::', T::class.'::', $key_definition_type);
-                    $result = eval('return '.$key_definition_type.';');
+                    $key_definition_type = preg_replace('/(T::|\(\))/', '', $key_definition_type);
+                    $result = call_user_func([T::class, $key_definition_type]);
                     
                     $struct_check = new Struct([
                         'value' => $result,
@@ -82,8 +83,7 @@ class Definition
 
             if (is_string($value)) {
                 if (preg_match_all(Vocabulary::schema['reference']['property'], $value)) {
-                    $definition_type_name = str_replace('{{','',$value);
-                    $definition_type_name = str_replace('}}','',$definition_type_name);
+                    $definition_type_name = preg_replace('/{{|}}/','',$value);
     
                     $value_definition_type = $constants[$definition_type_name];
 
@@ -92,8 +92,8 @@ class Definition
                             throw new \Exception("unknown type", 1);
                         }
                     } else if (preg_match_all(Vocabulary::schema['type'], $value_definition_type)) {
-                        $value_definition_type = str_replace('T::', T::class.'::', $value_definition_type);
-                        $result = eval('return '.$value_definition_type.';');
+                        $value_definition_type = preg_replace('/(T::|\(\))/', '', $value_definition_type);
+                        $result = call_user_func([T::class, $value_definition_type]);
                         
                         $struct_check = new Struct([
                             'value' => $result,
@@ -106,8 +106,8 @@ class Definition
                         throw new \Exception('unknown type "'.$value_definition_type.'"', 1);                        
                     }    
                 } else if (preg_match_all(Vocabulary::schema['type'], $value)) {
-                    $value = str_replace('T::', T::class.'::', $value);
-                    $result = eval('return '.$value.';');
+                    $value = preg_replace('/(T::|\(\))/', '', $value);
+                    $result = call_user_func([T::class, $value]);
 
                     $struct_check = new Struct([
                         'value' => $result,
