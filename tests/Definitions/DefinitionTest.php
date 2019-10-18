@@ -6,7 +6,7 @@ use j0hnys\Definitions\Tests\Sandbox\TestDefinition;
 
 final class DefinitionTest extends TestCase
 {
-    public function testCheck(): void
+    public function test_check(): void
     {
         //Arrange
         $test_definition = new TestDefinition();
@@ -28,7 +28,7 @@ final class DefinitionTest extends TestCase
         $this->assertNull($result);
     }
 
-    public function testCheckPath(): void
+    public function test_checkPath(): void
     {
         //Arrange
         $test_definition = new TestDefinition();
@@ -39,6 +39,30 @@ final class DefinitionTest extends TestCase
 
         //Assert
         $this->assertNull($result);
+    }
+
+    public function test_get(): void
+    {
+        //Arrange
+        $test_definition = new TestDefinition();
+        $schema = [
+            'schema' => [
+                'database' => [
+                    'factories' => [
+                        'Models' => 'T::integer()',
+                    ],
+                    'generated_migrations' => 'T::string()',
+                    'generated_model_exports' => 'T::string()',
+                    'generated_models' => 'T::string()',
+                ]
+            ]
+        ];
+
+        //Act
+        $result = $test_definition->get();
+
+        //Assert
+        $this->assertTrue($result === $schema);
     }
     
 }
