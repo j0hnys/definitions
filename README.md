@@ -1,6 +1,6 @@
 # Definitions
 
-Definitions are models of implementation. For more info on the theory see [here](), [here]() and [here]()
+Definitions are models of implementation. For more info on the theory see [here](http://johnstamkos.com/2019/10/19/definitions/)
 
 # Example
 
